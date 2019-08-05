@@ -1,0 +1,91 @@
+<% include ../partials/header %>
+
+
+    <div class="row">
+        <div class="col-md-3">
+            <p class="lead">YelpCamp</p>
+            <div class="list-group">
+                <li class="list-group-item active">asdf</li>
+                <li class="list-group-item">asdf</li>
+                <li class="list-group-item">asdf</li>
+            </div>
+            <div id="map"></div>
+        </div>
+        <div class="col-md-9">
+            <div class="thumbnail">
+                <img class="img-responsive" src="<%= theCampground.image %>">
+                <div class="caption-full">
+                    <h4 class = "pull-right" >$<%= theCampground.price %>/night</h4>
+                    <h4><a><%= theCampground.name %></a></h4>
+                    <p> <%= theCampground.description %></p>
+                    <p> <em>Submitted By</em> <%= theCampground.author.username %>, <%= moment(theCampground.createdAt).fromNow() %></p>
+                    
+                    <% if(currentUser && theCampground.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
+                        <a class="btn btn-warning" href="/campgrounds/<%= theCampground._id%>/edit">Edit</a>
+                        <form class="deleteForm" action="/campgrounds/<%= theCampground._id%>?_method=DELETE" method="POST">
+                            <button class="btn btn-danger">Delete</button>
+                        </form>
+                    <% } %>
+                
+                </div>
+            </div>
+            <div class="well">
+                <div class="text-right">
+                     <a class="btn btn-success" href="/campgrounds/<%= theCampground._id %>/comments/new">Add New Comment</a>
+                </div>
+                <hr>
+                    <% theCampground.comments.forEach(function(comment){ %>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <strong><%= comment.author.username %></strong>
+                                <span class="pull-right"><%= moment(comment.createdAt).fromNow() %></span>
+                                <p>
+                                    <%= comment.text %>
+                                </p>
+                                <% if (currentUser && comment.author.id.equals(currentUser._id) || currentUser && currentUser.isAdmin) { %>
+                                    <a 
+                                        class="btn btn-xs btn-warning" 
+                                        href="/campgrounds/<%= theCampground._id %>/comments/<%= comment._id %>/edit"
+                                    >Edit</a>
+                                    <form class="deleteForm" action="/campgrounds/<%= theCampground._id%>/comments/<%= comment._id %>?_method=DELETE" method="POST">
+                                        <input type="submit" class="btn btn-xs btn-danger" value="Delete">
+                                    </form>
+                                <% } %>
+                            </div>
+                        </div>
+                     <% }) %>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+  function initMap() {
+    var lat = <%= theCampground.lat %>;
+    var lng = <%= theCampground.lng %>;
+    var center = {lat: lat, lng: lng };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });
+    var contentString = `
+      <strong><%= theCampground.name %><br />
+      <%= theCampground.location %></strong>
+      <p><%= theCampground.description %></p>
+    `
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCmrukm_CPD_K4a7hoprzHsr3-Z9LEUFyk&callback=initMap"></script>
+    
+
+<% include ../partials/footer %>

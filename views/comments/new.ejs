@@ -1,0 +1,20 @@
+<% include ../partials/header %> <!-- the '..' represents the same function as like 
+        'cd ..' == going once back in the directory tree. 
+-->
+    <div class="row">
+        <h1 style= "text-align: center" >ADD NEW COMMENT to <%= Campground.name %></h1>
+    
+        <form action="/campgrounds/<%= Campground._id %>/comments" method="POST">
+            <div class="form-group">
+                <input class="form-control" type="text" name="comment[text]" placeholder="text">
+            </div>
+            <div class="form-group">
+                <button class="btn-primary btn-lg btn-default">Submit!</button>
+            </div>
+        </form>
+    <a href="/campgrounds">Go Back</a>
+    </div>
+
+<% include ../partials/footer %>
+
+
